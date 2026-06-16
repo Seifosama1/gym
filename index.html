@@ -497,8 +497,8 @@
           <div class="calorie-summary-card">
             <div class="calorie-summary-header">
               <div>
-                <span class="calorie-summary-label">Today's Calories</span>
-                <span class="calorie-summary-value" id="calorie-total">0</span>
+                <span class="calorie-summary-label">Net Calories</span>
+                <span class="calorie-summary-value" id="calorie-net">0</span>
                 <span class="calorie-summary-unit">kcal</span>
               </div>
               <div class="calorie-goal-display">
@@ -508,6 +508,17 @@
             </div>
             <div class="progress-bar-wrap">
               <div class="progress-bar" id="calorie-progress-bar" style="width:0%"></div>
+            </div>
+            <!-- Calorie Eaten & Burnt breakdown -->
+            <div class="calorie-breakdown">
+              <div class="breakdown-item">
+                <span class="breakdown-label">📥 Food (Eaten)</span>
+                <span class="breakdown-val" id="calorie-eaten">0 kcal</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="breakdown-label">📤 Cardio (Burnt)</span>
+                <span class="breakdown-val" id="calorie-burnt" style="color:var(--accent2)">-0 kcal</span>
+              </div>
             </div>
             <div class="calorie-macros" id="calorie-macros">
               <div class="macro-item"><span class="macro-dot protein"></span>Protein: <span id="protein-total">0</span>g</div>

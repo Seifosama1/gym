@@ -329,29 +329,39 @@ function getDailyTotals() {
 }
 
 function renderCalorieTracker() {
-  const { calorieGoals, customFoods } = getData();
+  const { calorieGoals, customFoods, cardioLog } = getData();
   const totals = getDailyTotals();
   const todayLog = getTodayFoodLog();
-  
-  // Update summary
-  const calorieTotalEl = document.getElementById('calorie-total');
-  if (calorieTotalEl) calorieTotalEl.textContent = Math.round(totals.calories);
+  const burntToday = getTodayBurntCalories(cardioLog);
+  const netCalories = Math.max(0, Math.round(totals.calories) - burntToday);
   const goalCal = calorieGoals?.calories || 2000;
+
+  // ── Net / Eaten / Burnt elements ─────────────────────────────────
+  const calNetEl    = document.getElementById('calorie-net');
+  const calEatenEl  = document.getElementById('calorie-eaten');
+  const calBurntEl  = document.getElementById('calorie-burnt');
+  const calTotalEl  = document.getElementById('calorie-total'); // legacy support
+  if (calNetEl)   calNetEl.textContent   = netCalories;
+  if (calTotalEl) calTotalEl.textContent = netCalories; // keep legacy id working
+  if (calEatenEl) calEatenEl.textContent = `${Math.round(totals.calories)} kcal`;
+  if (calBurntEl) calBurntEl.textContent = `-${burntToday} kcal`;
+
+  // ── Goal & progress bar ─────────────────────────────────────────
   const goalTextEl = document.getElementById('calorie-goal-text');
   if (goalTextEl) goalTextEl.textContent = goalCal;
-  const percent = Math.min(100, (totals.calories / goalCal) * 100);
+  const percent = Math.min(100, (netCalories / goalCal) * 100);
   const progressBar = document.getElementById('calorie-progress-bar');
   if (progressBar) progressBar.style.width = percent + '%';
   
-  // Update macros
+  // ── Macros ──────────────────────────────────────────────────────
   const proteinEl = document.getElementById('protein-total');
-  const carbsEl = document.getElementById('carbs-total');
-  const fatsEl = document.getElementById('fats-total');
+  const carbsEl   = document.getElementById('carbs-total');
+  const fatsEl    = document.getElementById('fats-total');
   if (proteinEl) proteinEl.textContent = Math.round(totals.protein);
-  if (carbsEl) carbsEl.textContent = Math.round(totals.carbs);
-  if (fatsEl) fatsEl.textContent = Math.round(totals.fats);
+  if (carbsEl)   carbsEl.textContent   = Math.round(totals.carbs);
+  if (fatsEl)    fatsEl.textContent    = Math.round(totals.fats);
   
-  // Quick food grid
+  // ── Quick food grid ─────────────────────────────────────────────
   const quickFoods = FOOD_DATABASE.slice(0, 9);
   const quickGrid = document.getElementById('quick-food-grid');
   if (quickGrid) {
@@ -363,7 +373,7 @@ function renderCalorieTracker() {
     `).join('');
   }
   
-  // Food log list
+  // ── Food log list ───────────────────────────────────────────────
   const logContainer = document.getElementById('food-log-list');
   if (logContainer) {
     if (todayLog.length === 0) {
@@ -391,7 +401,7 @@ function renderCalorieTracker() {
     }
   }
   
-  // Meal suggestions
+  // ── Meal suggestions ────────────────────────────────────────────
   const mealGrid = document.getElementById('meal-suggestions-grid');
   if (mealGrid) {
     const meals = [
@@ -531,6 +541,7 @@ function addFoodToLog() {
   closeModal('add-food-modal');
   renderCalorieTracker();
   toast(`Added ${quantity} × ${food.name}`);
+  if (getAuthUser()) syncUserDataToCloud();
 }
 
 function deleteFoodEntry(index) {
@@ -544,6 +555,7 @@ function deleteFoodEntry(index) {
       DB.set('foodLog', foodLog);
       renderCalorieTracker();
       toast('Entry removed');
+      if (getAuthUser()) syncUserDataToCloud();
     }
   }
 }
@@ -555,6 +567,7 @@ function resetTodayFood() {
     DB.set('foodLog', foodLog);
     renderCalorieTracker();
     toast('Today\'s food log reset');
+    if (getAuthUser()) syncUserDataToCloud();
   }
 }
 
@@ -1173,6 +1186,62 @@ function getTodayWater(waterLog) {
   return waterLog.filter(l => l.date.startsWith(today)).reduce((a, l) => a + l.amount, 0);
 }
 
+function calculateCardioCalories(exerciseName, durationMinutes, distanceKm) {
+  const weightLog = DB.get('weightLog', []);
+  const weight = weightLog.length > 0 ? weightLog[weightLog.length - 1].weight : 70; // Default to 70kg if no weight logged
+
+  const name = exerciseName.toLowerCase();
+  let met = 6.0; // Default MET value for general cardio
+
+  if (name.includes('treadmill') || name.includes('run')) {
+    if (distanceKm && durationMinutes > 0) {
+      // Calculate speed in km/h: distance / (duration / 60)
+      const speedKmH = distanceKm / (durationMinutes / 60);
+      const speedMph = speedKmH * 0.621371;
+      
+      if (speedMph < 4) met = 3.5;       // Walking
+      else if (speedMph < 5) met = 6.0;  // Light jogging
+      else if (speedMph < 6) met = 8.3;  // Jogging
+      else if (speedMph < 7) met = 9.8;  // Running (6 mph)
+      else if (speedMph < 8) met = 11.0; // Running (7 mph)
+      else if (speedMph < 9) met = 11.8; // Running (8 mph)
+      else met = 12.8;                   // Fast running
+    } else {
+      met = 9.8; // Default running
+    }
+  } else if (name.includes('walk')) {
+    met = 3.5;
+  } else if (name.includes('cycle') || name.includes('bike') || name.includes('spin')) {
+    if (distanceKm && durationMinutes > 0) {
+      const speedKmH = distanceKm / (durationMinutes / 60);
+      if (speedKmH < 15) met = 4.0;
+      else if (speedKmH < 20) met = 6.8;
+      else if (speedKmH < 25) met = 8.0;
+      else met = 10.0;
+    } else {
+      met = 7.5;
+    }
+  } else if (name.includes('row')) {
+    met = 7.0;
+  } else if (name.includes('elliptical')) {
+    met = 5.0;
+  } else if (name.includes('swim')) {
+    met = 8.0;
+  } else if (name.includes('rope') || name.includes('jump')) {
+    met = 11.0;
+  } else if (name.includes('stair') || name.includes('stepper')) {
+    met = 9.0;
+  }
+
+  // Formula: MET * 3.5 * weight * duration / 200
+  return Math.round(met * 3.5 * weight * durationMinutes / 200);
+}
+
+function getTodayBurntCalories(cardioLog) {
+  const today = new Date().toISOString().split('T')[0];
+  return (cardioLog || []).filter(c => c.date.startsWith(today)).reduce((sum, c) => sum + (c.calories || 0), 0);
+}
+
 function renderDashboard() {
   updateGreeting();
   const { sessions, prs, settings, waterLog, weightLog, weightLossGoal } = getData();
@@ -1540,16 +1609,21 @@ function saveSession() {
     const distance = parseFloat(document.getElementById('cardio-session-distance')?.value) || null;
     const intensity = parseInt(document.getElementById('cardio-session-intensity')?.value) || null;
     if (!duration) { toast('Please enter a duration'); return; }
+    
+    const calories = calculateCardioCalories(ex.name, duration, distance);
+    
     sessionData = {
       id: 'sess_' + Date.now(),
       name: ex.name, date: new Date().toISOString(),
       type: 'cardio',
-      exercises: [{ name: ex.name, duration, distance, intensity }],
+      exercises: [{ name: ex.name, duration, distance, intensity, calories }],
       totalSets: 1,
     };
     const cardioLog = getData().cardioLog;
-    cardioLog.push({ type: ex.name, duration, distance, calories: null, date: new Date().toISOString() });
+    cardioLog.push({ type: ex.name, duration, distance, calories, date: new Date().toISOString() });
     DB.set('cardioLog', cardioLog);
+    renderCalorieTracker();
+    syncUserDataToCloud();
   } else {
     const sets = ex.sets || 3;
     const loggedSets = [];
@@ -1907,10 +1981,12 @@ function saveCardioGoal() {
 }
 
 function logCardio() {
-  const type = document.getElementById('cardio-log-type')?.value || 'Other';
-  const duration = parseInt(document.getElementById('cardio-log-duration')?.value) || 0;
+  const type     = document.getElementById('cardio-log-type')?.value || 'Other';
+  const duration = parseInt(document.getElementById('cardio-log-duration')?.value)   || 0;
   const distance = parseFloat(document.getElementById('cardio-log-distance')?.value) || null;
-  const calories = parseInt(document.getElementById('cardio-log-calories')?.value) || null;
+  // Use manually entered calories OR auto-calculate using MET formula
+  const manualCalories = parseInt(document.getElementById('cardio-log-calories')?.value) || 0;
+  const calories = manualCalories > 0 ? manualCalories : calculateCardioCalories(type, duration, distance);
   if (!duration) { toast('Enter duration'); return; }
   const log = getData().cardioLog;
   log.push({ type, duration, distance, calories, date: new Date().toISOString() });
@@ -1921,8 +1997,10 @@ function logCardio() {
   if (durationInput) durationInput.value = '';
   if (distanceInput) distanceInput.value = '';
   if (caloriesInput) caloriesInput.value = '';
-  toast('Cardio logged! 🏃');
+  toast(`Cardio logged! 🏃 ~${calories} kcal burned`);
   renderCardioGoals();
+  renderCalorieTracker();
+  if (getAuthUser()) syncUserDataToCloud();
 }
 
 function renderCardioGoals() {
@@ -2687,19 +2765,23 @@ function saveFullSession() {
   sessions.push(sessionData);
   DB.set('sessions', sessions);
   
-  // Also log cardio separately
+  // Also log cardio separately — auto-calculate calories burned
   completedExercises.filter(ex => ex.isCardio).forEach(ex => {
     const cardioLog = getData().cardioLog;
     const set = ex.loggedSets?.[0] || {};
+    const duration  = set?.duration  || 0;
+    const distance  = set?.distance  || null;
+    const calories  = calculateCardioCalories(ex.name, duration, distance);
     cardioLog.push({
       type: ex.name,
-      duration: set?.duration || 0,
-      distance: set?.distance || null,
-      calories: null,
+      duration,
+      distance,
+      calories,
       date: new Date().toISOString()
     });
     DB.set('cardioLog', cardioLog);
   });
+  renderCalorieTracker();
   
   // Update PRs for all exercises
   completedExercises.forEach(ex => {
