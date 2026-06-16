@@ -46,6 +46,22 @@ self.addEventListener('activate', event => {
 
 // Fetch event - serve from cache first, then network (Cache First strategy)
 self.addEventListener('fetch', event => {
+  // Only handle GET requests
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
+  // Only handle same-origin or known CDN requests
+  const url = new URL(event.request.url);
+  const isSameOrigin = url.origin === self.location.origin;
+  const isCdn = url.hostname.includes('googleapis.com') || 
+                url.hostname.includes('gstatic.com') || 
+                url.hostname.includes('jsdelivr.net');
+
+  if (!isSameOrigin && !isCdn) {
+    return; // Let the browser handle external APIs (like Supabase) directly
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then(response => {
