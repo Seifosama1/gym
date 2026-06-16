@@ -265,17 +265,66 @@
       <section class="page" id="page-progress">
         <div class="page-scroll">
           <div class="page-header">
-            <h2 class="page-title">Progress</h2>
+            <h2 class="page-title">Progress 📊</h2>
           </div>
 
-          <!-- Chart Card -->
+          <!-- Summary Stats Row -->
+          <div class="stats-row" id="progress-stats-row">
+            <div class="stat-card">
+              <span class="stat-val" id="prog-total-sessions">0</span>
+              <span class="stat-label">Sessions</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-val" id="prog-total-volume">0</span>
+              <span class="stat-label">Total kg</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-val" id="prog-total-prs">0</span>
+              <span class="stat-label">PRs Set</span>
+            </div>
+          </div>
+
+          <!-- Exercise Max Weight Chart -->
           <div class="card">
             <div class="card-row" style="margin-bottom:12px">
-              <h3 class="card-title">Weight History</h3>
-              <select id="chart-exercise-select" class="select-input" onchange="renderChart()"></select>
+              <h3 class="card-title">💪 Lift Progress</h3>
+              <select id="chart-exercise-select" class="select-input" style="max-width:140px" onchange="renderChart()"></select>
             </div>
-            <div class="chart-wrap">
+            <div id="chart-no-data" style="display:none;text-align:center;padding:32px 0;color:var(--text2);">
+              <span style="font-size:32px">📈</span>
+              <p style="margin-top:8px;font-size:13px;">Log workouts to see your lift progress chart</p>
+            </div>
+            <div class="chart-wrap" id="chart-wrap" style="height:200px">
               <canvas id="progress-chart"></canvas>
+            </div>
+          </div>
+
+          <!-- Body Weight Chart -->
+          <div class="card">
+            <div class="card-row" style="margin-bottom:12px">
+              <h3 class="card-title">⚖️ Body Weight</h3>
+              <button class="btn btn-sm btn-ghost" onclick="navigate('goals')" style="font-size:11px">Log Weight</button>
+            </div>
+            <div id="body-weight-empty" style="display:none;text-align:center;padding:32px 0;color:var(--text2);">
+              <span style="font-size:32px">⚖️</span>
+              <p style="margin-top:8px;font-size:13px;">Go to Goals → Weight Loss to start logging your body weight</p>
+            </div>
+            <div class="chart-wrap" id="body-weight-chart-wrap" style="height:160px">
+              <canvas id="body-weight-chart"></canvas>
+            </div>
+          </div>
+
+          <!-- Weekly Volume Chart -->
+          <div class="card">
+            <div class="card-row" style="margin-bottom:12px">
+              <h3 class="card-title">📅 Weekly Volume</h3>
+              <span id="weekly-volume-label" style="font-size:12px;color:var(--text2)">kg lifted / week</span>
+            </div>
+            <div id="weekly-volume-empty" style="display:none;text-align:center;padding:24px 0;color:var(--text2);">
+              <p style="font-size:13px;">No sessions yet to chart</p>
+            </div>
+            <div class="chart-wrap" id="weekly-chart-wrap" style="height:160px">
+              <canvas id="weekly-volume-chart"></canvas>
             </div>
           </div>
 

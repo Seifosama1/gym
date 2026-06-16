@@ -61,7 +61,39 @@ const EXERCISE_LIBRARY = [
   { id: 'ab-rollout',        name: 'Ab Rollout',          muscle: 'Core',      sets: 3, reps: 10, rest: 60  },
   { id: 'bicycle-crunch',    name: 'Bicycle Crunch',      muscle: 'Core',      sets: 3, reps: 20, rest: 45  },
   { id: 'leg-raise',         name: 'Lying Leg Raise',     muscle: 'Core',      sets: 3, reps: 15, rest: 45  },
-  { id: 'cable-crunch',      name: 'Cable Crunch',        muscle: 'Core',      sets: 3, reps: 15, rest: 45  },
+  { id: 'cable-crunch',      name: 'Cable Crunch',        muscle: 'Core',      sets: 3, reps: 15, rest: 45  },// CHEST
+  { id: 'db-press',          name: 'Dumbbell Bench Press',muscle: 'Chest',     sets: 4, reps: 8,  rest: 90  },
+  { id: 'incline-db-press',  name: 'Incline Dumbbell Press',muscle:'Chest',     sets: 3, reps: 10, rest: 90  },
+
+  // BACK
+  { id: 'db-pullover',       name: 'Dumbbell Pullover',   muscle: 'Back',      sets: 3, reps: 12, rest: 60  },
+  { id: 'chest-supported-row',name:'Tbar Row', muscle: 'Back',      sets: 3, reps: 10, rest: 75  },
+  { id: 'shrugs',            name: 'Barbell Shrug',       muscle: 'Back',      sets: 4, reps: 12, rest: 60  },
+
+  // SHOULDERS
+  { id: 'db-shoulder-press', name: 'Dumbbell Shoulder Press',muscle:'Shoulders',sets: 4, reps: 10, rest: 75  },
+  { id: 'cable-lateral-raise',name:'Cable Lateral Raise', muscle: 'Shoulders', sets: 3, reps: 15, rest: 45  },
+  { id: 'machine-shoulder-press', name: 'machine Shoulder Press',muscle:'Shoulders',sets: 4, reps: 10, rest: 75  },
+
+  // LEGS
+  { id: 'hip-thrust',        name: 'Hip Thrust',          muscle: 'Legs',      sets: 4, reps: 10, rest: 90  },
+  { id: 'goblet-squat',      name: 'Goblet Squat',        muscle: 'Legs',      sets: 3, reps: 12, rest: 60  },
+  { id: 'seated-calf-raise', name: 'Seated Calf Raise',   muscle: 'Legs',      sets: 4, reps: 15, rest: 45  },
+
+  // ARMS
+  { id: 'cable-curl',        name: 'Bicep Cable Curl',    muscle: 'Arms',      sets: 3, reps: 12, rest: 60  },
+  { id: 'reverse-curl',      name: 'Reverse Barbell Curl',muscle: 'Arms',      sets: 3, reps: 12, rest: 45  },
+  { id: 'rope-overhead-ext', name: 'Cable Overhead Ext.', muscle: 'Arms',      sets: 3, reps: 12, rest: 60  },
+  { id: 'kickbacks',         name: 'cable Kickback',   muscle: 'Arms',      sets: 3, reps: 15, rest: 45  },
+  { id: 'spider-curl',        name: 'spider Curl',    muscle: 'Arms',      sets: 3, reps: 12, rest: 60  },
+
+  // CORE
+  { id: 'woodchopper',       name: 'Cable Woodchopper',   muscle: 'Core',      sets: 3, reps: 15, rest: 45  },
+  { id: 'bird-dog',          name: 'Bird Dog',            muscle: 'Core',      sets: 3, reps: 12, rest: 30  },
+
+  // CARDIO
+  { id: 'burpees',           name: 'Burpees',             muscle: 'Cardio',    sets: 4, reps: 1,  rest: 60, isCardio: true, unit: 'min' },
+  { id: 'battle-ropes',      name: 'Battle Ropes',        muscle: 'Cardio',    sets: 5, reps: 1,  rest: 45, isCardio: true, unit: 'min' },
 
   // CARDIO
   { id: 'treadmill',         name: 'Treadmill Run',       muscle: 'Cardio',    sets: 1, reps: 1,  rest: 0, isCardio: true, unit: 'min' },

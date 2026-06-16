@@ -74,7 +74,137 @@ const FOOD_DATABASE = [
   { id: 'ful-mudammas', name: 'Ful Mudammas (Fava Beans)', calories: 110, protein: 7.5, carbs: 20, fats: 0.8, serving: '100g' },
     { id: 'koshary', name: 'Egyptian Koshary', calories: 350, protein: 11, carbs: 70, fats: 2.5, serving: '1 medium bowl' },
     { id: 'baladi-bread', name: 'Aish Baladi (Whole Wheat)', calories: 250, protein: 9, carbs: 53, fats: 1.2, serving: '1 loaf' },
-    { id: 'molokhia', name: 'Molokhia (Plain)', calories: 45, protein: 3.5, carbs: 7, fats: 0.2, serving: '1 ladle' }
+    { id: 'taameya', name: 'Taameya (Egyptian Falafel)', calories: 333, protein: 13.2, carbs: 31.8, fats: 17.5, serving: '100g' },
+{ id: 'hawawshi', name: 'Hawawshi', calories: 285, protein: 14.5, carbs: 24.2, fats: 14.8, serving: '100g' },
+{ id: 'molokhia', name: 'Molokhia Soup (Plain)', calories: 48, protein: 3.1, carbs: 5.8, fats: 1.6, serving: '100g' },
+{ id: 'mahshi-enab', name: 'Mahshi Wara Enab (Stuffed Grape Leaves)', calories: 142, protein: 3.4, carbs: 21.8, fats: 4.6, serving: '100g' },
+{ id: 'mahshi-kromb', name: 'Mahshi Kromb (Stuffed Cabbage Leaves)', calories: 125, protein: 2.8, carbs: 19.5, fats: 3.9, serving: '100g' },
+{ id: 'mesakaa', name: 'Egyptian Mesakaa (Eggplant)', calories: 134, protein: 2.1, carbs: 9.4, fats: 9.8, serving: '100g' },
+{ id: 'baba-ganoush', name: 'Baba Ganoush', calories: 92, protein: 1.5, carbs: 6.2, fats: 7.1, serving: '100g' },
+{ id: 'roz-bel-laban', name: 'Roz Bel Laban (Egyptian Rice Pudding)', calories: 122, protein: 3.5, carbs: 22.4, fats: 2.5, serving: '100g' },
+{ id: 'steak', name: 'Beef Steak (Grilled)', calories: 250, protein: 26.1, carbs: 0, fats: 15.4, serving: '100g' },
+{ id: 'macarona-bechamel', name: 'Macarona Bechamel', calories: 149, protein: 7, carbs: 20, fats: 3.7, serving: '100g' },
+{ id: 'egyptian-fattah', name: 'Egyptian Fattah (with Meat)', calories: 208, protein: 8.6, carbs: 5, fats: 17.2, serving: '100g' },
+{ id: 'shish-taouk', name: 'Shish Taouk (Grilled Chicken Skewers)', calories: 127, protein: 14, carbs: 2.2, fats: 7, serving: '100g' },
+{ id: 'kofta', name: 'Egyptian Grilled Kofta', calories: 254, protein: 17.2, carbs: 1.5, fats: 20.1, serving: '100g' },
+{ id: 'kebab', name: 'Grilled Lamb Kebab', calories: 223, protein: 21.5, carbs: 0, fats: 15.2, serving: '100g' },
+{ id: 'roqaq', name: 'Egyptian Roqaq (with Minced Meat)', calories: 290, protein: 11, carbs: 28, fats: 14.5, serving: '100g' },
+{ id: 'alexandrian-liver', name: 'Kebda Eskandarani (Alexandrian Liver)', calories: 165, protein: 20.3, carbs: 3.8, fats: 7.5, serving: '100g' },// --- Famous Global Restaurant Items ---
+{ id: 'mcdonalds-big-mac', name: 'McDonald\'s Big Mac', calories: 580, protein: 25, carbs: 45, fats: 34, serving: '1 burger' },
+{ id: 'burgerking-whopper', name: 'Burger King Whopper', calories: 670, protein: 31.5, carbs: 54, fats: 41, serving: '1 burger' },
+{ id: 'kfc-zinger', name: 'KFC Zinger Burger', calories: 450, protein: 26.4, carbs: 43.8, fats: 18.8, serving: '1 burger' },
+{ id: 'starbucks-croissant', name: 'Starbucks Butter Croissant', calories: 260, protein: 5, carbs: 28, fats: 15, serving: '1 piece' },
+{ id: 'pizza-hut-pepperoni', name: 'Pizza Hut Pepperoni Slice (Pan)', calories: 280, protein: 11, carbs: 28, fats: 13, serving: '1 slice' },
+{ id: 'sushi-salmon-roll', name: 'Japanese Salmon Avocado Roll', calories: 304, protein: 13, carbs: 42, fats: 8.5, serving: '8 pieces' },
+{ id: 'taco-beef', name: 'Mexican Beef Taco (Hard Shell)', calories: 179, protein: 10, carbs: 14, fats: 10, serving: '1 taco' },
+{ id: 'italian-pizza-margherita', name: 'Italian Pizza Margherita', calories: 234, protein: 10.3, carbs: 30.2, fats: 7.9, serving: '100g' },
+{ id: 'chicken-shawarma-wrap', name: 'Middle Eastern Chicken Shawarma Wrap', calories: 430, protein: 28, carbs: 38, fats: 18, serving: '1 wrap' },
+// --- Missing Everyday Staples & Proteins ---
+{ id: 'tuna-canned', name: 'Canned Tuna (in Water)', calories: 116, protein: 26, carbs: 0, fats: 1, serving: '100g' },
+{ id: 'turkey-breast', name: 'Turkey Breast (Deli Slices)', calories: 104, protein: 17, carbs: 1.1, fats: 2, serving: '100g' },
+{ id: 'white-fish', name: 'Tilapia / White Fish (Grilled)', calories: 128, protein: 26, carbs: 0, fats: 2.7, serving: '100g' },
+{ id: 'shrimp', name: 'Shrimp (Grilled or Boiled)', calories: 99, protein: 24, carbs: 0.2, fats: 0.3, serving: '100g' },
+{ id: 'basmati-rice', name: 'Basmati Rice (Cooked)', calories: 121, protein: 3.5, carbs: 26, fats: 0.4, serving: '100g' },
+
+// --- More Global & Local Restaurant Icons ---
+{ id: 'mcdonalds-nuggets', name: 'McDonald\'s Chicken McNuggets', calories: 420, protein: 24, carbs: 25, fats: 25, serving: '9 pieces' },
+{ id: 'dominos-margherita', name: 'Domino\'s Classic Margherita Pizza', calories: 205, protein: 8.5, carbs: 24, fats: 7.9, serving: '1 slice (Medium)' },
+{ id: 'cinnabon-classic', name: 'Cinnabon Classic Roll', calories: 880, protein: 13, carbs: 127, fats: 37, serving: '1 roll' },
+{ id: 'buffaloburger-oldschool', name: 'Buffalo Burger Old School (150g)', calories: 510, protein: 34, carbs: 41, fats: 22, serving: '1 burger' },
+{ id: 'kfc-twister', name: 'KFC Twister Wrap', calories: 480, protein: 21, carbs: 42, fats: 24, serving: '1 wrap' },// --- Missing Local Egyptian Favorites & Fast Food ---
+{ id: 'bazooka-sniper', name: 'Bazooka Sniper Sandwich', calories: 840, protein: 36, carbs: 64, fats: 48, serving: '1 sandwich' },
+{ id: 'prego-grilled-chicken', name: 'Prego Grilled Chicken Breast Meal', calories: 410, protein: 44, carbs: 12, fats: 19, serving: '1 meal' },
+{ id: 'gad-rezo', name: 'Gad Rizo Rice with Chicken', calories: 450, protein: 18, carbs: 68, fats: 11, serving: '1 bowl' },
+{ id: 'el-tahrir-koshary-mega', name: 'Koshary El Tahrir (Mega Box)', calories: 710, protein: 22, carbs: 142, fats: 5, serving: '1 box' },
+{ id: 'feteer-meshaltet', name: 'Feteer Meshaltet (Plain)', calories: 415, protein: 6.5, carbs: 49, fats: 21.5, serving: '100g' },
+
+// --- Healthy Proteins, Grains & Snacks ---
+{ id: 'cottage-cheese', name: 'Cottage Cheese / Jebna Quraish', calories: 98, protein: 11, carbs: 3.4, fats: 4.3, serving: '100g' },
+{ id: 'brown-rice', name: 'Brown Rice (Cooked)', calories: 112, protein: 2.6, carbs: 23.5, fats: 0.9, serving: '100g' },
+{ id: 'quinoa', name: 'Quinoa (Cooked)', calories: 120, protein: 4.4, carbs: 21.3, fats: 1.9, serving: '100g' },
+{ id: 'peanut-butter', name: 'Peanut Butter (Natural)', calories: 588, protein: 25, carbs: 20, fats: 50, serving: '100g' },
+{ id: 'boiled-potato', name: 'Boiled Potato (Without Skin)', calories: 87, protein: 1.9, carbs: 20.1, fats: 0.1, serving: '100g' },
+
+// --- More World-Famous Items ---
+{ id: 'starbucks-iced-latte', name: 'Starbucks Iced Caffè Latte (Grande/2%)', calories: 130, protein: 8, carbs: 13, fats: 4.5, serving: '1 glass' },
+{ id: 'popeyes-chicken-sandwich', name: 'Popeyes Classic Chicken Sandwich', calories: 700, protein: 28, carbs: 50, fats: 42, serving: '1 sandwich' },
+{ id: 'krispy-kreme-glazed', name: 'Krispy Kreme Original Glazed Donut', calories: 190, protein: 2, carbs: 22, fats: 10, serving: '1 donut' },// --- Missing Fast-Food & Everyday Essentials ---
+{ id: 'french-fries-fastfood', name: 'Fast Food French Fries', calories: 312, protein: 3.4, carbs: 41, fats: 15, serving: '100g' },
+{ id: 'french-fries-homemade', name: 'Homemade French Fries (Fried)', calories: 274, protein: 3.5, carbs: 36, fats: 13, serving: '100g' },
+{ id: 'sweet-potato-fries', name: 'Sweet Potato Fries (Baked)', calories: 154, protein: 2, carbs: 24, fats: 5, serving: '100g' },
+{ id: 'mcdonalds-fries-medium', name: 'McDonald\'s French Fries (Medium)', calories: 320, protein: 4, carbs: 43, fats: 15, serving: '1 medium box' },
+// --- Fruits ---
+{ id: 'apple-green',       name: 'Green Apple',         calories: 52,  protein: 0.3, carbs: 14,   fats: 0.2, serving: '100g' },
+{ id: 'strawberries',      name: 'Strawberries',        calories: 32,  protein: 0.7, carbs: 7.7,  fats: 0.3, serving: '100g' },
+{ id: 'blueberries',       name: 'Blueberries',         calories: 57,  protein: 0.7, carbs: 14,   fats: 0.3, serving: '100g' },
+{ id: 'orange',            name: 'Orange',              calories: 47,  protein: 0.9, carbs: 11.8, fats: 0.1, serving: '100g' },
+{ id: 'watermelon',        name: 'Watermelon',          calories: 30,  protein: 0.6, carbs: 7.6,  fats: 0.2, serving: '100g' },
+{ id: 'mango-egyptian',    name: 'Egyptian Mango',      calories: 60,  protein: 0.8, carbs: 15,   fats: 0.4, serving: '100g' },
+{ id: 'dates-dry',         name: 'Dates (Dry / Tamr)',  calories: 277, protein: 1.8, carbs: 75,   fats: 0.2, serving: '100g' },
+{ id: 'dates-fresh',       name: 'Dates (Fresh / Balah)',calories: 142, protein: 0.9, carbs: 37,   fats: 0.1, serving: '100g' },
+{ id: 'grapes',            name: 'Grapes',              calories: 69,  protein: 0.7, carbs: 18,   fats: 0.2, serving: '100g' },
+{ id: 'peach',             name: 'Peach',               calories: 39,  protein: 0.9, carbs: 9.5,  fats: 0.3, serving: '100g' },
+
+// --- Vegetables ---
+{ id: 'cucumber',          name: 'Cucumber (With Skin)',calories: 15,  protein: 0.7, carbs: 3.6,  fats: 0.1, serving: '100g' },
+{ id: 'tomato',            name: 'Tomato',              calories: 18,  protein: 0.9, carbs: 3.9,  fats: 0.2, serving: '100g' },
+{ id: 'spinach',           name: 'Spinach (Raw)',       calories: 23,  protein: 2.9, carbs: 3.6,  fats: 0.4, serving: '100g' },
+{ id: 'bell-pepper',       name: 'Bell Pepper (Mixed)', calories: 20,  protein: 0.9, carbs: 4.6,  fats: 0.2, serving: '100g' },
+{ id: 'carrots',           name: 'Carrots',             calories: 41,  protein: 0.9, carbs: 9.6,  fats: 0.2, serving: '100g' },
+{ id: 'onion',             name: 'Onion',               calories: 40,  protein: 1.1, carbs: 9.3,  fats: 0.1, serving: '100g' },
+{ id: 'garlic',            name: 'Garlic',              calories: 149, protein: 6.4, carbs: 33,   fats: 0.5, serving: '100g' },
+{ id: 'lettuce',           name: 'Lettuce (Romaine)',   calories: 17,  protein: 1.2, carbs: 3.3,  fats: 0.3, serving: '100g' },
+{ id: 'zucchini',          name: 'Zucchini / Kousa',    calories: 17,  protein: 1.2, carbs: 3.1,  fats: 0.3, serving: '100g' },
+// --- Traditional Egyptian Vegetable Dishes ---
+{ id: 'bamya-plain',       name: 'Bamya (Okra Stew - Plain)',   calories: 65,  protein: 2.5, carbs: 11,   fats: 2.1, serving: '100g' },
+{ id: 'bamya-with-meat',   name: 'Bamya bel Lahma (with Beef)', calories: 145, protein: 11.2, carbs: 8.5,  fats: 7.8, serving: '100g' },
+{ id: 'okra-raw',          name: 'Okra (Raw / Fresh)',          calories: 33,  protein: 1.9, carbs: 7.5,  fats: 0.2, serving: '100g' },// --- Chocolates ---
+{ id: 'cadbury-dairy-milk',name: 'Cadbury Dairy Milk (Standard)',calories: 534, protein: 7.3, carbs: 57,   fats: 30,   serving: '100g' },
+{ id: 'galaxy-smooth-milk',name: 'Galaxy Smooth Milk',         calories: 546, protein: 7,   carbs: 56,   fats: 32.4, serving: '100g' },
+{ id: 'kitkat-4finger',    name: 'KitKat (4 Finger Bar)',       calories: 209, protein: 2.7, carbs: 24.3, fats: 11.2, serving: '1 bar' },
+{ id: 'snickers',          name: 'Snickers Bar',                calories: 250, protein: 4.3, carbs: 33,   fats: 12,   serving: '1 bar (48g)' },
+{ id: 'dark-chocolate-70', name: 'Dark Chocolate (70-85% Cacao)',calories: 598, protein: 7.8, carbs: 46,   fats: 43,   serving: '100g' },
+{ id: 'corona-chocolate',  name: 'Corona Milk Chocolate (Local)',calories: 520, protein: 6.5, carbs: 58,   fats: 29,   serving: '100g' },
+
+// --- Candies & Sweets ---
+{ id: 'gummy-bears',       name: 'Haribo Gummy Bears',          calories: 343, protein: 6.9, carbs: 77,   fats: 0.1,  serving: '100g' },
+{ id: 'skittles-original', name: 'Skittles (Original)',         calories: 405, protein: 0,   carbs: 90.7, fats: 4.4,  serving: '100g' },
+{ id: 'mms-peanut',        name: 'M&M\'s Peanut',               calories: 511, protein: 9.7, carbs: 58.9, fats: 25.3, serving: '100g' },
+
+// --- Chips & Savory Snacks ---
+{ id: 'chipsy-egypt',      name: 'Chipsy (Salt - Egyptian)',    calories: 532, protein: 6.5, carbs: 53,   fats: 32.5, serving: '100g' },
+{ id: 'doritos-flaminhot', name: 'Doritos Flamin\' Hot',         calories: 515, protein: 6.1, carbs: 58.1, fats: 27.2, serving: '100g' },
+{ id: 'pringles-original', name: 'Pringles Original',           calories: 534, protein: 4,   carbs: 53,   fats: 33,   serving: '100g' },
+{ id: 'popcorn-air-popped',name: 'Popcorn (Air-Popped)',        calories: 387, protein: 12.9,carbs: 78,   fats: 4.5,  serving: '100g' },
+{ id: 'popcorn-oil-salted',name: 'Popcorn (Oil-Popped & Salted)',calories: 500, protein: 9,   carbs: 58,   fats: 28,   serving: '100g' },
+{ id: 'bake-stix',         name: 'Bake Stix (Flavored)',        calories: 430, protein: 9.5, carbs: 72,   fats: 11,   serving: '100g' },// --- Imported & Local Biscuits ---
+{ id: 'oreos',             name: 'Oreo Biscuits',               calories: 471, protein: 4.3, carbs: 70,   fats: 20,   serving: '100g' },
+{ id: 'digestive-plain',   name: 'McVitie\'s Digestive (Plain)',calories: 478, protein: 7.2, carbs: 62.2, fats: 21.3, serving: '100g' },
+{ id: 'digestive-choco',   name: 'McVitie\'s Chocolate Digestive',calories: 493, protein: 6.7, carbs: 62.5, fats: 23.3, serving: '100g' },
+{ id: 'lotus-biscoff',     name: 'Lotus Biscoff Biscuits',      calories: 484, protein: 4.9, carbs: 72.6, fats: 19,   serving: '100g' },
+{ id: 'borio',             name: 'Borio Biscuits (Local)',      calories: 465, protein: 4.5, carbs: 69,   fats: 19.5, serving: '100g' },
+{ id: 'biskrem',           name: 'Biskrem (Chocolate Filled)',  calories: 490, protein: 5.5, carbs: 65,   fats: 23,   serving: '100g' },
+{ id: 'ulker-gandour',     name: 'Ulker Gandour Biscuits',      calories: 440, protein: 7,   carbs: 75,   fats: 12,   serving: '100g' },
+{ id: 'kahk-plain',        name: 'Egyptian Kahk (Plain Eid)',   calories: 520, protein: 5.8, carbs: 55,   fats: 31,   serving: '100g' },
+{ id: 'nashader-biscuits', name: 'Egyptian Biscuit (Nashader)', calories: 460, protein: 6.5, carbs: 68,   fats: 17.5, serving: '100g' },// --- Spreads, Jams & Creams ---
+{ id: 'nutella',           name: 'Nutella (Hazelnut Spread)',   calories: 539, protein: 6.3, carbs: 57.5, fats: 30.9, serving: '100g' },
+{ id: 'strawberry-jam',    name: 'Strawberry Jam (Vitrac)',     calories: 275, protein: 0.5, carbs: 68,   fats: 0.1,  serving: '100g' },
+{ id: 'diet-jam',          name: 'Diet Strawberry Jam (Hero)',  calories: 35,  protein: 0.3, carbs: 7.5,  fats: 0.1,  serving: '100g' },
+{ id: 'lotus-spread',      name: 'Lotus Biscoff Cookie Butter', calories: 584, protein: 2.9, carbs: 57,   fats: 38.1, serving: '100g' },
+{ id: 'halawa-plain',      name: 'Egyptian Halawa (Plain)',     calories: 512, protein: 12,  carbs: 53,   fats: 28,   serving: '100g' },
+{ id: 'halawa-spread',     name: 'Halawa Spread (El Rashidi)',  calories: 495, protein: 10.5,carbs: 56,   fats: 25.5, serving: '100g' },
+{ id: 'clotted-cream',     name: 'Egyptian Eshta (Baladi)',     calories: 345, protein: 2,   carbs: 2.8,  fats: 37,   serving: '100g' },
+{ id: 'honey-white',       name: 'Pure White Honey',            calories: 304, protein: 0.3, carbs: 82.4, fats: 0,    serving: '100g' },
+{ id: 'molasses-black',    name: 'Egyptian Black Honey (Asal)', calories: 290, protein: 0,   carbs: 75,   fats: 0,    serving: '100g' },// --- Egyptian & International Cheeses ---
+{ id: 'rumi-cheese',       name: 'Egyptian Rumi Cheese (Old)',  calories: 390, protein: 26,   carbs: 2,    fats: 31,   serving: '100g' },
+{ id: 'domiaty-cheese',    name: 'Domiaty White Cheese (Feta)', calories: 250, protein: 14,   carbs: 4,    fats: 20,   serving: '100g' },
+{ id: 'baramily-cheese',   name: 'Egyptian Baramily Cheese',    calories: 265, protein: 13.5, carbs: 3.5,  fats: 22,   serving: '100g' },
+{ id: 'quresh-cheese',     name: 'Kareiish Cheese (Quraish)',   calories: 98,  protein: 11,   carbs: 3.4,  fats: 4.3,  serving: '100g' },
+{ id: 'mozzarella-local',  name: 'Mozzarella Cheese (Local)',   calories: 280, protein: 22,   carbs: 2.2,  fats: 20,   serving: '100g' },
+{ id: 'cheddar-slices',    name: 'Processed Cheddar Slices',    calories: 330, protein: 16,   carbs: 6,    fats: 27,   serving: '100g' },
+{ id: 'kiri-square',       name: 'Kiri Cream Cheese Square',    calories: 52,  protein: 0.9,  carbs: 0.7,  fats: 5.1,  serving: '1 square (18g)' },
+{ id: 'la-vache-qu-rit',   name: 'Triangle Cheese (La Vache)',  calories: 40,  protein: 1.3,  carbs: 0.9,  fats: 3.5,  serving: '1 triangle (15g)' },
+{ id: 'parmesan',          name: 'Parmesan Cheese',             calories: 431, protein: 38,   carbs: 4.1,  fats: 29,   serving: '100g' },
 ];
 
 // ─── State ────────────────────────────────────────────────
@@ -1489,7 +1619,10 @@ function renderStrengthSessionInputs(exercise, sets) {
           <span class="unit-option ${isLb ? 'active' : ''}">lb</span>
         </button>
       </span>
-      <span>Reps</span><span>✓</span>
+      <span>Reps</span>
+      <span>
+        <button class="check-all-btn" onclick="checkAllSets(${sets}, ${exercise.rest})" title="Mark all sets done">✓ All</button>
+      </span>
     </div>
     ${Array.from({length: sets}, (_, i) => `
       <div class="set-row" id="set-row-${i}">
@@ -1557,6 +1690,32 @@ function toggleSetCheck(i, rest) {
   num.classList.toggle('done', isDone);
   isDone ? SoundManager.check() : SoundManager.uncheck();
   if (isDone && rest > 0) startRestTimer(rest);
+}
+
+function checkAllSets(totalSets, rest) {
+  for (let i = 0; i < totalSets; i++) {
+    const check = document.getElementById('set-check-' + i);
+    const num   = document.getElementById('set-num-' + i);
+    if (check && !check.classList.contains('checked')) {
+      check.classList.add('checked');
+      if (num) num.classList.add('done');
+    }
+  }
+  if (typeof SoundManager !== 'undefined') SoundManager.check();
+  toast('All sets marked done ✅');
+}
+
+function checkAllQueuedSets(totalSets) {
+  for (let i = 0; i < totalSets; i++) {
+    const check = document.getElementById('set-check-' + i);
+    const num   = document.getElementById('set-num-' + i);
+    if (check && !check.classList.contains('checked')) {
+      check.classList.add('checked');
+      if (num) num.classList.add('done');
+    }
+  }
+  if (typeof SoundManager !== 'undefined') SoundManager.check();
+  toast('All sets marked done ✅');
 }
 
 let timerInterval;
@@ -1688,9 +1847,29 @@ function saveSession() {
 
 // ─── Progress ────────────────────────────────────────────
 function renderProgress() {
-  const { sessions, prs } = getData();
+  const { sessions, prs, weightLog } = getData();
+
+  // ── Summary stats ──────────────────────────────────────
+  const totalVolume = sessions.reduce((sum, s) => {
+    (s.exercises || []).forEach(ex => {
+      (ex.sets || []).forEach(set => {
+        if (set.done) sum += (set.weight || 0) * (set.reps || 1);
+      });
+    });
+    return sum;
+  }, 0);
+
+  const totalSessEl = document.getElementById('prog-total-sessions');
+  const totalVolEl  = document.getElementById('prog-total-volume');
+  const totalPrsEl  = document.getElementById('prog-total-prs');
+  if (totalSessEl) totalSessEl.textContent = sessions.length;
+  if (totalVolEl)  totalVolEl.textContent  = totalVolume >= 1000 ? (totalVolume / 1000).toFixed(1) + 'k' : Math.round(totalVolume);
+  if (totalPrsEl)  totalPrsEl.textContent  = Object.keys(prs).length;
+
   populateChartSelect(sessions);
   renderChart();
+  renderBodyWeightChart();
+  renderWeeklyVolumeChart(sessions);
   renderPRs(prs);
   renderSessionHistory(sessions);
 }
@@ -1698,14 +1877,39 @@ function renderProgress() {
 function populateChartSelect(sessions) {
   const select = document.getElementById('chart-exercise-select');
   if (!select) return;
-  const ids = [...new Set(sessions.filter(s => s.type === 'strength').flatMap(s => s.exercises.map(e => e.id || e.name)))];
+
+  // Gather all exercise ids from ALL session types (full_session + strength)
   const exerciseMap = {};
-  sessions.filter(s => s.type === 'strength').forEach(s => s.exercises.forEach(e => { exerciseMap[e.id || e.name] = e.name; }));
+  sessions.forEach(s => {
+    (s.exercises || []).forEach(e => {
+      if (!e.isCardio) {
+        const key = e.id || e.name;
+        exerciseMap[key] = e.name;
+      }
+    });
+  });
+
+  const ids = Object.keys(exerciseMap);
   const prev = select.value;
-  select.innerHTML = ids.length ? ids.map(id => `<option value="${id}">${escHtml(exerciseMap[id] || id)}</option>`).join('') : '<option value="">No data yet</option>';
+
+  const noData = document.getElementById('chart-no-data');
+  const chartWrap = document.getElementById('chart-wrap');
+
+  if (!ids.length) {
+    select.innerHTML = '<option value="">No strength sessions yet</option>';
+    if (noData) noData.style.display = 'block';
+    if (chartWrap) chartWrap.style.display = 'none';
+    return;
+  }
+
+  if (noData) noData.style.display = 'none';
+  if (chartWrap) chartWrap.style.display = 'block';
+
+  select.innerHTML = ids.map(id => `<option value="${id}">${escHtml(exerciseMap[id] || id)}</option>`).join('');
   if (prev && ids.includes(prev)) select.value = prev;
 }
 
+// ─── Exercise Max-Weight Chart ────────────────────────────
 let chartInstance = null;
 function renderChart() {
   const select = document.getElementById('chart-exercise-select');
@@ -1713,19 +1917,42 @@ function renderChart() {
   const exId = select.value;
   const { sessions } = getData();
   const canvas = document.getElementById('progress-chart');
+  if (!canvas) return;
 
   if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
   if (!exId) return;
 
   const dataPoints = [];
-  sessions.filter(s => s.type === 'strength').forEach(s => {
-    s.exercises.forEach(e => {
-      if ((e.id || e.name) === exId) {
-        const maxW = Math.max(...(e.sets || []).map(st => st.weight || 0).filter(w => w > 0));
-        if (maxW > 0) dataPoints.push({ x: formatDate(s.date), y: maxW });
+  sessions.forEach(s => {
+    (s.exercises || []).forEach(e => {
+      if ((e.id || e.name) === exId && !e.isCardio) {
+        const sets = e.sets || [];
+        const maxW = sets.length ? Math.max(...sets.map(st => st.weight || 0).filter(w => w > 0)) : 0;
+        if (maxW > 0) dataPoints.push({ x: formatDate(s.date), y: maxW, date: s.date });
       }
     });
   });
+
+  // Sort by date
+  dataPoints.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  if (!dataPoints.length) {
+    const noData = document.getElementById('chart-no-data');
+    const chartWrap = document.getElementById('chart-wrap');
+    if (noData) noData.style.display = 'block';
+    if (chartWrap) chartWrap.style.display = 'none';
+    return;
+  }
+
+  const noData = document.getElementById('chart-no-data');
+  const chartWrap = document.getElementById('chart-wrap');
+  if (noData) noData.style.display = 'none';
+  if (chartWrap) chartWrap.style.display = 'block';
+
+  // Find PR point index
+  const maxVal = Math.max(...dataPoints.map(d => d.y));
+  const pointColors = dataPoints.map(d => d.y === maxVal ? '#FFB830' : '#00E5A0');
+  const pointSizes  = dataPoints.map(d => d.y === maxVal ? 8 : 5);
 
   chartInstance = new Chart(canvas, {
     type: 'line',
@@ -1735,19 +1962,222 @@ function renderChart() {
         label: 'Max Weight (kg)',
         data: dataPoints.map(d => d.y),
         borderColor: '#00E5A0',
-        backgroundColor: 'rgba(0,229,160,0.1)',
-        pointBackgroundColor: '#00E5A0',
-        pointRadius: 5,
-        tension: 0.3,
+        backgroundColor: 'rgba(0,229,160,0.08)',
+        pointBackgroundColor: pointColors,
+        pointBorderColor: pointColors,
+        pointRadius: pointSizes,
+        pointHoverRadius: 8,
+        tension: 0.35,
         fill: true,
+        borderWidth: 2,
       }]
     },
     options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(17,17,24,0.95)',
+          titleColor: '#8888A0',
+          bodyColor: '#F0F0F5',
+          borderColor: 'rgba(255,255,255,0.08)',
+          borderWidth: 1,
+          callbacks: {
+            label: ctx => `Max: ${ctx.parsed.y} kg`,
+            afterLabel: ctx => ctx.parsed.y === maxVal ? '🏆 Personal Record!' : ''
+          }
+        }
+      },
       scales: {
-        x: { ticks: { color: '#8888A0', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
-        y: { ticks: { color: '#8888A0' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+        x: {
+          ticks: { color: '#8888A0', font: { size: 10 }, maxTicksLimit: 7, maxRotation: 0 },
+          grid: { color: 'rgba(255,255,255,0.04)' }
+        },
+        y: {
+          ticks: { color: '#8888A0', font: { size: 10 }, callback: v => v + ' kg' },
+          grid: { color: 'rgba(255,255,255,0.04)' }
+        }
+      }
+    }
+  });
+}
+
+// ─── Body Weight Chart ────────────────────────────────────
+let bodyWeightChartInstance = null;
+function renderBodyWeightChart() {
+  const canvas  = document.getElementById('body-weight-chart');
+  const emptyEl = document.getElementById('body-weight-empty');
+  const wrapEl  = document.getElementById('body-weight-chart-wrap');
+  if (!canvas) return;
+
+  const weightLog = DB.get('weightLog', []);
+  if (bodyWeightChartInstance) { bodyWeightChartInstance.destroy(); bodyWeightChartInstance = null; }
+
+  if (!weightLog.length) {
+    if (wrapEl)  wrapEl.style.display  = 'none';
+    if (emptyEl) emptyEl.style.display = 'block';
+    return;
+  }
+  if (wrapEl)  wrapEl.style.display  = 'block';
+  if (emptyEl) emptyEl.style.display = 'none';
+
+  const sorted = [...weightLog].sort((a, b) => new Date(a.date) - new Date(b.date));
+  const labels = sorted.map(e => formatDate(e.date));
+  const values = sorted.map(e => e.weight);
+  const minW   = Math.min(...values);
+  const maxW   = Math.max(...values);
+  const pointColors = values.map((v, i) => i === values.lastIndexOf(Math.min(...values)) ? '#00E5A0' : '#FF6B6B');
+
+  bodyWeightChartInstance = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Body Weight (kg)',
+        data: values,
+        borderColor: '#FF6B6B',
+        backgroundColor: 'rgba(255,107,107,0.07)',
+        pointBackgroundColor: pointColors,
+        pointBorderColor: pointColors,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        tension: 0.4,
+        fill: true,
+        borderWidth: 2,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(17,17,24,0.95)',
+          titleColor: '#8888A0',
+          bodyColor: '#F0F0F5',
+          borderColor: 'rgba(255,255,255,0.08)',
+          borderWidth: 1,
+          callbacks: { label: ctx => `Weight: ${ctx.parsed.y} kg` }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: '#8888A0', font: { size: 10 }, maxTicksLimit: 7, maxRotation: 0 },
+          grid: { color: 'rgba(255,255,255,0.04)' }
+        },
+        y: {
+          ticks: { color: '#8888A0', font: { size: 10 }, callback: v => v + ' kg' },
+          grid: { color: 'rgba(255,255,255,0.04)' },
+          suggestedMin: minW - 2,
+          suggestedMax: maxW + 2,
+        }
+      }
+    }
+  });
+}
+
+// ─── Weekly Volume Bar Chart ──────────────────────────────
+let weeklyChartInstance = null;
+function renderWeeklyVolumeChart(sessions) {
+  const canvas   = document.getElementById('weekly-volume-chart');
+  const emptyEl  = document.getElementById('weekly-volume-empty');
+  const wrapEl   = document.getElementById('weekly-chart-wrap');
+  if (!canvas) return;
+
+  if (weeklyChartInstance) { weeklyChartInstance.destroy(); weeklyChartInstance = null; }
+
+  // Build last 8 weeks of data
+  const weeks = {};
+  const now = new Date();
+  for (let w = 7; w >= 0; w--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - w * 7);
+    // Week label: Mon of that week
+    const day = d.getDay();
+    const mon = new Date(d);
+    mon.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
+    const key = mon.toISOString().split('T')[0];
+    weeks[key] = { label: mon.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }), volume: 0, sessions: 0 };
+  }
+
+  sessions.forEach(s => {
+    const date = new Date(s.date);
+    const day = date.getDay();
+    const mon = new Date(date);
+    mon.setDate(date.getDate() - (day === 0 ? 6 : day - 1));
+    const key = mon.toISOString().split('T')[0];
+    if (weeks[key]) {
+      weeks[key].sessions++;
+      (s.exercises || []).forEach(ex => {
+        (ex.sets || []).forEach(set => {
+          if (set.done) weeks[key].volume += (set.weight || 0) * (set.reps || 1);
+        });
+      });
+    }
+  });
+
+  const entries = Object.values(weeks);
+  const hasData = entries.some(e => e.volume > 0 || e.sessions > 0);
+
+  if (!hasData) {
+    if (wrapEl)  wrapEl.style.display  = 'none';
+    if (emptyEl) emptyEl.style.display = 'block';
+    return;
+  }
+  if (wrapEl)  wrapEl.style.display  = 'block';
+  if (emptyEl) emptyEl.style.display = 'none';
+
+  const maxVol = Math.max(...entries.map(e => e.volume));
+  const barColors = entries.map(e => {
+    if (e.volume === 0) return 'rgba(255,255,255,0.05)';
+    if (e.volume === maxVol) return 'rgba(255,184,48,0.8)';
+    return 'rgba(0,229,160,0.6)';
+  });
+
+  weeklyChartInstance = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: entries.map(e => e.label),
+      datasets: [{
+        label: 'Volume (kg)',
+        data: entries.map(e => e.volume),
+        backgroundColor: barColors,
+        borderColor: barColors.map(c => c.replace('0.6', '1').replace('0.8', '1').replace('0.05', '0.1')),
+        borderWidth: 1,
+        borderRadius: 4,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(17,17,24,0.95)',
+          titleColor: '#8888A0',
+          bodyColor: '#F0F0F5',
+          borderColor: 'rgba(255,255,255,0.08)',
+          borderWidth: 1,
+          callbacks: {
+            label: ctx => {
+              const e = entries[ctx.dataIndex];
+              return [`Volume: ${Math.round(ctx.parsed.y).toLocaleString()} kg`, `Sessions: ${e.sessions}`];
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: '#8888A0', font: { size: 9 }, maxRotation: 0 },
+          grid: { display: false }
+        },
+        y: {
+          ticks: { color: '#8888A0', font: { size: 10 }, callback: v => v >= 1000 ? (v/1000).toFixed(1)+'k' : v },
+          grid: { color: 'rgba(255,255,255,0.04)' },
+          beginAtZero: true,
+        }
       }
     }
   });
@@ -2577,7 +3007,10 @@ function openQueueExerciseModal(queueIndex) {
             <span class="unit-option ${isLb ? 'active' : ''}">lb</span>
           </button>
         </span>
-        <span>Reps</span><span>✓</span>
+        <span>Reps</span>
+        <span>
+          <button class="check-all-btn" onclick="checkAllQueuedSets(${sets})" title="Mark all sets done">✓ All</button>
+        </span>
       </div>
       ${Array.from({length: sets}, (_, i) => {
         const existingSet = exercise.loggedSets && exercise.loggedSets[i];
