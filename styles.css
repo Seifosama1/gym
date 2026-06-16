@@ -3917,3 +3917,27 @@ body.bg-custom::before {
 .plate-2_5 { width: 10px; height: 26px; background-color: #F0F0F5; }
 .plate-1_25 { width: 9px; height: 22px; background-color: #8888A0; color: #FFF; }
 /* END OF PLATE CALCULATOR STYLES */
+
+.card {
+  background: rgba(16, 16, 24, 0.65) !important;
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius);
+  padding: 16px;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+/* Subtle glow when hovering or interacting with metrics */
+.card:hover {
+  border-color: rgba(0, 229, 160, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 229, 160, 0.05);
+}
+
+/* Make buttons feel like a native app click */
+.btn:active, 
+.tab-btn:active, 
+.icon-btn:active,
+.nav-item:active {
+  transform: scale(0.95);
+  transition: transform 0.05s ease;
+}
