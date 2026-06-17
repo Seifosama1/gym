@@ -5331,6 +5331,25 @@ const SUPABASE_URL  = 'https://ntgjqeixzmajkefkrhhy.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50Z2pxZWl4em1hamtlZmtyaGh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NTg3MDAsImV4cCI6MjA5NzEzNDcwMH0.RZxAsWw8bzQJ7Mwq5Mvqtk3jNUT6rEi3Ah9ZEG7rLM0';
 const AUTH_SESSION_KEY = 'jimbuddy_sb_session';
 
+async function isUsernameTaken(username) {
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/leaderboard?username=eq.${encodeURIComponent(username)}&select=username`,
+      {
+        headers: {
+          'apikey': SUPABASE_ANON,
+          'Authorization': `Bearer ${SUPABASE_ANON}`
+        }
+      }
+    );
+    if (!res.ok) return false; // assume not taken if error
+    const data = await res.json();
+    return data.length > 0;
+  } catch {
+    return false; // fallback: let sign-up proceed (network issue)
+  }
+}
+     
 // ─── Cloud Sync Functions ───────────────────────────────────────────
 
 async function syncUserDataToCloud() {
@@ -5653,17 +5672,34 @@ async function authSignUp() {
   const email    = document.getElementById('auth-signup-email')?.value.trim();
   const password = document.getElementById('auth-signup-password')?.value;
 
-  if (!username || username.length < 2) { showAuthMessage('Please enter a username (at least 2 characters).'); return; }
-  if (!isValidEmail(email))              { showAuthMessage('Please enter a valid email address.'); return; }
-  if (!password || password.length < 6)  { showAuthMessage('Password must be at least 6 characters.'); return; }
+  // ─── Basic validation ──────────────────────────────
+  if (!username || username.length < 2) {
+    showAuthMessage('Please enter a username (at least 2 characters).');
+    return;
+  }
+  if (!isValidEmail(email)) {
+    showAuthMessage('Please enter a valid email address.');
+    return;
+  }
+  if (!password || password.length < 6) {
+    showAuthMessage('Password must be at least 6 characters.');
+    return;
+  }
 
+  // ─── NEW: Check if username is already taken ──────
+  showAuthMessage('Checking username availability...', 'loading');
+  const taken = await isUsernameTaken(username);
+  if (taken) {
+    showAuthMessage('❌ Username "' + username + '" is already taken. Please choose another.');
+    return;
+  }
+
+  // ─── Proceed with sign‑up ──────────────────────────
   showAuthMessage('Creating account…', 'loading');
-
   try {
     const data = await sbSignUp(email, password, username);
 
     if (data.error) {
-      // Common Supabase errors → friendly messages
       const msg = data.error.message || data.msg || '';
       if (msg.toLowerCase().includes('already registered') || msg.toLowerCase().includes('already exists')) {
         showAuthMessage('An account with this email already exists. Please log in.');
@@ -5673,21 +5709,31 @@ async function authSignUp() {
       return;
     }
 
-    // Supabase may return a session immediately (email confirm disabled) or just a user
     const session = data.session || null;
     const user    = data.user || (session && session.user) || null;
     const uname   = user?.user_metadata?.username || username;
     const uemail  = user?.email || email;
 
-    if (session) setAuthSession({ ...session, user: { ...session.user, user_metadata: { username: uname } } });
+    if (session) {
+      setAuthSession({ ...session, user: { ...session.user, user_metadata: { username: uname } } });
+    }
 
     activateAccountProfile(uname, uemail);
 
+    // ─── NEW: Sync leaderboard immediately ──────────
+    if (getAuthUser()) {
+      setTimeout(() => syncLeaderboard(), 1500);
+    }
+
     if (session) {
       showAuthMessage('Account created! Welcome, ' + uname + ' 🎉', 'success');
-      setTimeout(() => { renderAuthState(); closeModal('profile-modal'); toast('🎉 Welcome, ' + uname + '!'); }, 900);
+      setTimeout(() => {
+        renderAuthState();
+        closeModal('profile-modal');
+        toast('🎉 Welcome, ' + uname + '!');
+      }, 900);
     } else {
-      // Email confirmation required — switch to login tab and pre-fill the email
+      // Email confirmation required
       showAuthMessage('✅ Account created! Check your email to confirm, then log in below.', 'success');
       setTimeout(() => {
         const signupPassword = document.getElementById('auth-signup-password')?.value || '';
@@ -5704,7 +5750,6 @@ async function authSignUp() {
     console.error('authSignUp error:', err);
   }
 }
-
 // ─── Log In (Supabase) ────────────────────────────────────
 async function authLogin() {
   console.log('🔐 Attempting login...');
