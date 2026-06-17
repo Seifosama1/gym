@@ -207,6 +207,351 @@ const FOOD_DATABASE = [
 { id: 'parmesan',          name: 'Parmesan Cheese',             calories: 431, protein: 38,   carbs: 4.1,  fats: 29,   serving: '100g' },
 ];
 
+// ─── Diet Plan Blueprints ──────────────────────────────
+
+// Each blueprint: [foodId, quantity, foodId, quantity, ...]
+// Quantity is in "servings" (e.g., 1 = 1 serving as defined in DB)
+const MEAL_BLUEPRINTS = {
+  breakfast: [
+    { foods: ['oatmeal', 1.2, 'banana', 1, 'protein-shake', 0.5], label: 'Oatmeal + Banana + Whey' },
+    { foods: ['egg', 3, 'bread', 2, 'cheese', 1], label: 'Eggs on Toast + Cheese' },
+    { foods: ['greek-yogurt', 1.5, 'strawberries', 1.5, 'almonds', 0.3], label: 'Greek Yogurt + Berries + Almonds' },
+    { foods: ['milk', 1, 'oatmeal', 1, 'banana', 1], label: 'Overnight Oats' },
+    { foods: ['ful-mudammas', 1.5, 'baladi-bread', 1, 'tomato', 0.5], label: 'Ful + Baladi Bread' },
+  ],
+  lunch: [
+    { foods: ['chicken-breast', 1.5, 'rice', 1.2, 'broccoli', 1.5], label: 'Grilled Chicken + Rice + Broccoli' },
+    { foods: ['salmon', 1.2, 'sweet-potato', 1.5, 'spinach', 1], label: 'Salmon + Sweet Potato + Spinach' },
+    { foods: ['tuna-canned', 1.5, 'pasta', 1.2, 'tomato', 1], label: 'Tuna Pasta Salad' },
+    { foods: ['koshary', 1.5, 'molokhia', 1], label: 'Koshary + Molokhia' },
+    { foods: ['shish-taouk', 1.5, 'rice', 1, 'cucumber', 1], label: 'Shish Taouk + Rice' },
+  ],
+  dinner: [
+    { foods: ['steak', 1.2, 'boiled-potato', 1.5, 'broccoli', 1.5], label: 'Steak + Potato + Broccoli' },
+    { foods: ['white-fish', 1.5, 'basmati-rice', 1.2, 'zucchini', 1], label: 'Grilled Fish + Basmati + Zucchini' },
+    { foods: ['eggs', 3, 'baladi-bread', 1, 'avocado', 0.5], label: 'Avocado Egg Toast' },
+    { foods: ['macarona-bechamel', 1.5, 'salad', 1], label: 'Macarona Bechamel + Salad' },
+    { foods: ['kofta', 1.5, 'rice', 1, 'tomato', 1], label: 'Kofta + Rice' },
+  ],
+  snack: [
+    { foods: ['protein-shake', 1, 'banana', 1], label: 'Protein Shake + Banana' },
+    { foods: ['greek-yogurt', 1, 'blueberries', 1], label: 'Greek Yogurt + Berries' },
+    { foods: ['almonds', 0.5, 'apple', 1], label: 'Apple + Almonds' },
+    { foods: ['peanut-butter', 0.2, 'bread', 2], label: 'Peanut Butter Toast' },
+    { foods: ['cottage-cheese', 1, 'grapes', 1], label: 'Cottage Cheese + Grapes' },
+    { foods: ['dates-dry', 0.5, 'milk', 1], label: 'Dates + Milk' },
+  ]
+};
+
+function getBlueprintMacros(blueprint) {
+  const foods = blueprint.foods;
+  let total = { calories: 0, protein: 0, carbs: 0, fats: 0 };
+  for (let i = 0; i < foods.length; i += 2) {
+    const id = foods[i];
+    const qty = foods[i + 1];
+    const dbFood = FOOD_DATABASE.find(f => f.id === id);
+    if (dbFood) {
+      total.calories += dbFood.calories * qty;
+      total.protein  += (dbFood.protein || 0) * qty;
+      total.carbs    += (dbFood.carbs || 0) * qty;
+      total.fats     += (dbFood.fats || 0) * qty;
+    }
+  }
+  return total;
+}
+
+function generateDailyDietPlan(targetCal, targetP, targetC, targetF) {
+  // Allow ±15% flexibility
+  const margin = 0.15;
+  
+  // Shuffle arrays for variety
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  const mealTypes = ['breakfast', 'lunch', 'dinner'];
+  const snackBlueprints = shuffle(MEAL_BLUEPRINTS.snack);
+  
+  // Pick one random blueprint for each main meal
+  const selected = {
+    breakfast: shuffle(MEAL_BLUEPRINTS.breakfast)[0],
+    lunch: shuffle(MEAL_BLUEPRINTS.lunch)[0],
+    dinner: shuffle(MEAL_BLUEPRINTS.dinner)[0],
+    snack1: snackBlueprints[0] || MEAL_BLUEPRINTS.snack[0],
+    snack2: snackBlueprints[1] || MEAL_BLUEPRINTS.snack[0],
+  };
+
+  // Calculate total macros of the base plan
+  let total = { calories: 0, protein: 0, carbs: 0, fats: 0 };
+  const mealKeys = ['breakfast', 'lunch', 'dinner', 'snack1', 'snack2'];
+  const planMacros = {};
+  
+  mealKeys.forEach(key => {
+    const bp = selected[key];
+    const macros = getBlueprintMacros(bp);
+    planMacros[key] = macros;
+    total.calories += macros.calories;
+    total.protein  += macros.protein;
+    total.carbs    += macros.carbs;
+    total.fats     += macros.fats;
+  });
+
+  // Scale all meals proportionally to hit the calorie target
+  const scaleFactor = targetCal / total.calories;
+  
+  // Apply scaling to each meal's blueprint
+  const scaledPlan = {};
+  mealKeys.forEach(key => {
+    const bp = selected[key];
+    const baseMacros = planMacros[key];
+    // Scale the quantities in the blueprint
+    const scaledFoods = [];
+    for (let i = 0; i < bp.foods.length; i += 2) {
+      const id = bp.foods[i];
+      const qty = bp.foods[i + 1] * scaleFactor;
+      scaledFoods.push(id, Math.round(qty * 10) / 10); // keep 1 decimal
+    }
+    scaledPlan[key] = {
+      label: bp.label,
+      foods: scaledFoods,
+      macros: {
+        calories: Math.round(baseMacros.calories * scaleFactor),
+        protein:  Math.round(baseMacros.protein * scaleFactor * 10) / 10,
+        carbs:    Math.round(baseMacros.carbs * scaleFactor * 10) / 10,
+        fats:     Math.round(baseMacros.fats * scaleFactor * 10) / 10,
+      }
+    };
+  });
+
+  // Adjust slightly to match protein/fat/carb targets if possible (simplified)
+  // We'll rely on the fact that the blueprints are balanced.
+  return scaledPlan;
+}
+
+function generateWeeklyDietPlan() {
+  const profile = DB.get('calculatorProfile', null);
+  const goals = DB.get('calorieGoals', { calories: 2000, protein: 150, carbs: 200, fats: 55 });
+
+  if (!profile) {
+    toast('⚠️ Please save your profile in the Calculator tab first.');
+    navigate('calculator');
+    return;
+  }
+
+  const targetCal = goals.calories || 2000;
+  const targetP = goals.protein || 150;
+  const targetC = goals.carbs || 200;
+  const targetF = goals.fats || 55;
+
+  // Generate 7 days
+  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const weekPlan = days.map((day, idx) => {
+    // Add slight variation each day (±5%)
+    const variation = 0.95 + (Math.random() * 0.1);
+    const dayCal = Math.round(targetCal * variation);
+    const dayP = Math.round(targetP * variation);
+    const dayC = Math.round(targetC * variation);
+    const dayF = Math.round(targetF * variation);
+    
+    const meals = generateDailyDietPlan(dayCal, dayP, dayC, dayF);
+    return { day, meals, target: { calories: dayCal, protein: dayP, carbs: dayC, fats: dayF } };
+  });
+
+  DB.set('weeklyDietPlan', weekPlan);
+  renderDietPage(weekPlan);
+  toast('📋 Weekly diet plan generated!');
+   if (getAuthUser()) {
+    setTimeout(() => syncUserDataToCloud(), 500);}
+}
+
+function renderDietPage(plan) {
+  const container = document.getElementById('weekly-diet-grid');
+  const summary = document.getElementById('diet-profile-summary');
+  if (!container) return;
+
+  // If no plan, load from DB
+  if (!plan) {
+    plan = DB.get('weeklyDietPlan', null);
+  }
+
+  const profile = DB.get('calculatorProfile', null);
+  const goals = DB.get('calorieGoals', { calories: 2000, protein: 150, carbs: 200, fats: 55 });
+
+  // Update summary
+  if (summary) {
+    if (profile) {
+      summary.innerHTML = `
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;">
+          <span style="font-size:13px;color:var(--text2);">
+            👤 ${profile.sex === 'male' ? 'Male' : 'Female'}, ${profile.age} yrs · ${profile.weight}kg · ${profile.height}cm
+          </span>
+          <span style="font-size:13px;color:var(--accent);">
+            🎯 ${goals.calories} kcal · ${goals.protein}g P · ${goals.carbs}g C · ${goals.fats}g F
+          </span>
+          <span style="font-size:12px;color:var(--text3);">${plan ? '✅ Plan ready' : '❌ No plan'}</span>
+        </div>
+      `;
+    } else {
+      summary.innerHTML = `<p class="muted-text">⚡ Go to <strong>Calculator</strong> to save your profile, then generate a diet plan.</p>`;
+    }
+  }
+
+  if (!plan || plan.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <span class="empty-icon">📋</span>
+        <p>No diet plan yet. Tap <strong>Generate</strong> above.</p>
+      </div>
+    `;
+    return;
+  }
+
+  // Render each day
+  container.innerHTML = plan.map((day, dayIdx) => {
+    const meals = day.meals;
+    const mealKeys = ['breakfast', 'lunch', 'dinner', 'snack1', 'snack2'];
+    const mealLabels = { breakfast: '🌅 Breakfast', lunch: '☀️ Lunch', dinner: '🌙 Dinner', snack1: '🍎 Snack 1', snack2: '🍌 Snack 2' };
+    const mealClasses = { breakfast: 'breakfast', lunch: 'lunch', dinner: 'dinner', snack1: 'snack', snack2: 'snack' };
+
+    const mealBlocks = mealKeys.map(key => {
+      const meal = meals[key];
+      if (!meal) return '';
+      
+      // Build food name string
+      const foodNames = [];
+      for (let i = 0; i < meal.foods.length; i += 2) {
+        const id = meal.foods[i];
+        const qty = meal.foods[i + 1];
+        const dbFood = FOOD_DATABASE.find(f => f.id === id);
+        if (dbFood) {
+          const serving = dbFood.serving || 'serving';
+          foodNames.push(`${qty}× ${dbFood.name}`);
+        }
+      }
+
+      const m = meal.macros || { calories: 0, protein: 0, carbs: 0, fats: 0 };
+      return `
+        <div class="meal-block ${mealClasses[key]}">
+          <span class="meal-label">${mealLabels[key]}</span>
+          <span class="meal-foods">
+            ${foodNames.map(name => `<span class="food-item">${name}</span>`).join('')}
+          </span>
+          <span class="meal-macros">${m.calories} kcal · ${m.protein}g P · ${m.carbs}g C · ${m.fats}g F</span>
+        </div>
+      `;
+    }).join('');
+
+    // Calculate day totals
+    const dayTotal = { calories: 0, protein: 0, carbs: 0, fats: 0 };
+    mealKeys.forEach(key => {
+      const m = meals[key]?.macros || {};
+      dayTotal.calories += m.calories || 0;
+      dayTotal.protein  += m.protein || 0;
+      dayTotal.carbs    += m.carbs || 0;
+      dayTotal.fats     += m.fats || 0;
+    });
+
+    return `
+      <div class="day-diet-card">
+        <div class="day-diet-header">
+          <span class="day-diet-title">${day.day}</span>
+          <span class="day-diet-macros">
+            🔥 ${Math.round(dayTotal.calories)} kcal ·
+            💪 ${Math.round(dayTotal.protein)}g ·
+            🍚 ${Math.round(dayTotal.carbs)}g ·
+            🧈 ${Math.round(dayTotal.fats)}g
+          </span>
+        </div>
+        ${mealBlocks}
+        <div class="day-diet-actions">
+          <button class="btn btn-sm btn-primary" onclick="addDayToLog(${dayIdx})">➕ Add to Today</button>
+          <button class="btn btn-sm btn-ghost" onclick="regenerateDay(${dayIdx})">🔄 Regen Day</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function addDayToLog(dayIndex) {
+  const plan = DB.get('weeklyDietPlan', null);
+  if (!plan || !plan[dayIndex]) {
+    toast('Plan not found');
+    return;
+  }
+
+  const day = plan[dayIndex];
+  const meals = day.meals;
+  const mealKeys = ['breakfast', 'lunch', 'dinner', 'snack1', 'snack2'];
+  const foodLog = getData().foodLog;
+  const now = new Date().toISOString();
+
+  mealKeys.forEach(key => {
+    const meal = meals[key];
+    if (!meal) return;
+    for (let i = 0; i < meal.foods.length; i += 2) {
+      const id = meal.foods[i];
+      const qty = meal.foods[i + 1];
+      const dbFood = FOOD_DATABASE.find(f => f.id === id);
+      if (dbFood) {
+        foodLog.push({
+          id: 'food_' + Date.now() + '_' + Math.random(),
+          name: dbFood.name,
+          calories: dbFood.calories,
+          protein: dbFood.protein || 0,
+          carbs: dbFood.carbs || 0,
+          fats: dbFood.fats || 0,
+          serving: dbFood.serving || '1 serving',
+          quantity: qty,
+          date: now
+        });
+      }
+    }
+  });
+
+  DB.set('foodLog', foodLog);
+  renderCalorieTracker();
+  toast(`✅ Added ${day.day}'s meals to today's log!`);
+  if (getAuthUser()) syncUserDataToCloud();
+}
+
+function regenerateDay(dayIndex) {
+  const plan = DB.get('weeklyDietPlan', null);
+  if (!plan || !plan[dayIndex]) return;
+
+  const profile = DB.get('calculatorProfile', null);
+  const goals = DB.get('calorieGoals', { calories: 2000, protein: 150, carbs: 200, fats: 55 });
+  if (!profile) { toast('Profile missing'); return; }
+
+  const targetCal = goals.calories || 2000;
+  const targetP = goals.protein || 150;
+  const targetC = goals.carbs || 200;
+  const targetF = goals.fats || 55;
+
+  const variation = 0.95 + (Math.random() * 0.1);
+  const dayCal = Math.round(targetCal * variation);
+  const dayP = Math.round(targetP * variation);
+  const dayC = Math.round(targetC * variation);
+  const dayF = Math.round(targetF * variation);
+
+  const newMeals = generateDailyDietPlan(dayCal, dayP, dayC, dayF);
+  plan[dayIndex].meals = newMeals;
+  plan[dayIndex].target = { calories: dayCal, protein: dayP, carbs: dayC, fats: dayF };
+  
+  DB.set('weeklyDietPlan', plan);
+  renderDietPage(plan);
+  toast(`🔄 Regenerated ${plan[dayIndex].day}`);
+
+ if (getAuthUser()) {
+    setTimeout(() => syncUserDataToCloud(), 300);
+  }
+
+}
+
 // ─── State ────────────────────────────────────────────────
 let state = {
   currentPage: 'home',
@@ -436,6 +781,31 @@ if (clearBtn && input) {
     clearBtn.style.display = 'none';
   });
 }
+
+// ══════════════════════════════════════════
+// ONBOARDING TOUR
+// ══════════════════════════════════════════
+
+
+
+// ─── Spotlight pulse animation ───
+const styleSheet = document.createElement("style");
+styleSheet.textContent = `
+  @keyframes spotlightPulse {
+    0%, 100% { box-shadow: 0 0 0 9999px rgba(0,0,0,0.75), 0 0 0 2px var(--accent); }
+    50% { box-shadow: 0 0 0 9999px rgba(0,0,0,0.75), 0 0 0 4px var(--accent), 0 0 20px rgba(0,229,160,0.3); }
+  }
+`;
+document.head.appendChild(styleSheet);
+
+// ─── Auto-start on load ──────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  // Ensure other inits run first, then start tour
+  setTimeout(() => {
+    TourManager.init();
+  }, 800);
+});
+
 });
 
 
@@ -1505,6 +1875,7 @@ function navigate(page) {
   if (page === 'schedule') renderWeeklySchedule();
   if (page === 'calorie') renderCalorieTracker();
   if (page === 'calculator') { 
+    if (page === 'diet') renderDietPage();
   renderCalorieTracker();
   displaySavedProfile();
   loadSavedProfile();
@@ -4239,7 +4610,9 @@ function saveCurrentProfileData(profileId) {
       calorieGoals:   DB.get('calorieGoals', { calories: 2000, protein: 150, carbs: 200, fats: 55 }),
       customFoods:    DB.get('customFoods', []),
       customWorkouts: DB.get('customWorkouts', []),
-      weeklyGoals:    DB.get('weeklyGoals', [])
+      weeklyGoals:    DB.get('weeklyGoals', []),
+            weeklyDietPlan: DB.get('weeklyDietPlan', null)
+
     }
   };
 
@@ -4271,6 +4644,8 @@ function loadProfileData(profileId) {
     DB.set('customFoods',    data.customFoods    || []);
     DB.set('customWorkouts', data.customWorkouts || []);
     DB.set('weeklyGoals',    data.weeklyGoals    || []);
+        DB.set('weeklyDietPlan', data.weeklyDietPlan || null);
+
   }
 }
 
@@ -4977,7 +5352,8 @@ async function syncUserDataToCloud() {
     calorieGoals: DB.get('calorieGoals', { calories: 2000, protein: 150, carbs: 200, fats: 55 }),
     customFoods: DB.get('customFoods', []),
     customWorkouts: DB.get('customWorkouts', []),
-    weeklyGoals: DB.get('weeklyGoals', [])
+    weeklyGoals: DB.get('weeklyGoals', []),
+    weeklyDietPlan: DB.get('weeklyDietPlan', null)
   };
 
   const session = getAuthSession();
@@ -5050,6 +5426,8 @@ async function loadUserDataFromCloud() {
         DB.set('customFoods', data.customFoods || []);
         DB.set('customWorkouts', data.customWorkouts || []);
         DB.set('weeklyGoals', data.weeklyGoals || []);
+            DB.set('weeklyDietPlan', data.weeklyDietPlan || null);
+
         
         console.log('[Sync] Data loaded from cloud ✅');
         return true;
@@ -5518,6 +5896,168 @@ window.authLogout         = authLogout;
 window.renderAuthState    = renderAuthState;
 
 // ─── Init ─────────────────────────────────────────────────
+
+// ══════════════════════════════════════════
+// ONBOARDING TOUR
+// ══════════════════════════════════════════
+
+const TourManager = {
+  steps: [],
+  currentStep: 0,
+  isRunning: false,
+
+  init() {
+    const hasOnboarded = DB.get('hasOnboarded', false);
+    if (hasOnboarded) return;
+
+    const profiles = DB.get('profiles', []);
+    const calorieGoals = DB.get('calorieGoals', null);
+    const schedule = DB.get('weeklySchedule', null);
+
+    if (profiles.length > 0 && calorieGoals && schedule?.days) {
+      const hasExercises = Object.values(schedule.days).some(d => d.workouts?.length > 0);
+      if (hasExercises) {
+        DB.set('hasOnboarded', true);
+        return;
+      }
+    }
+
+    this.steps = [
+      {
+        target: '#profile-badge-btn',
+        title: '👤 Create Your Profile',
+        desc: 'Tap the profile icon to create your first profile. This stores all your progress, PRs, and history.',
+        arrow: 'bottom'
+      },
+      {
+        target: '#settings-btn',
+        title: '⚙️ Set Your Goals',
+        desc: 'Open Settings, then go to "Calorie & Weight Calculator". Enter your age, weight, height, and activity level to get your daily targets.',
+        arrow: 'bottom'
+      },
+      {
+        target: '[data-page="water"]',
+        title: '💧 Set Water Goal',
+        desc: 'Navigate to the Water tab and set your daily hydration goal (default is 2000ml). Stay hydrated!',
+        arrow: 'top'
+      },
+      {
+        target: '[data-page="schedule"]',
+        title: '📅 Plan Your Week',
+        desc: 'Go to Schedule and tap a day to add exercises. Or use a Quick Template (Push/Pull/Legs, Upper/Lower, etc.) to get started instantly.',
+        arrow: 'top'
+      }
+    ];
+
+    this.isRunning = true;
+    this.currentStep = 0;
+    this.showStep(0);
+  },
+
+  showStep(index) {
+    const step = this.steps[index];
+    if (!step) { this.finish(); return; }
+
+    const overlay = document.getElementById('tour-overlay');
+    const spotlight = document.getElementById('tour-spotlight');
+    const tooltip = document.getElementById('tour-tooltip');
+    const counter = document.getElementById('tour-step-counter');
+    const title = document.getElementById('tour-title');
+    const desc = document.getElementById('tour-description');
+    const nextBtn = document.getElementById('tour-next-btn');
+    const skipBtn = document.getElementById('tour-skip-btn');
+
+    overlay.style.display = 'block';
+    counter.textContent = `${index + 1} / ${this.steps.length}`;
+    title.textContent = step.title;
+    desc.textContent = step.desc;
+    nextBtn.textContent = index === this.steps.length - 1 ? '🎉 Finish' : 'Next →';
+
+    const target = document.querySelector(step.target);
+    if (!target) {
+      spotlight.style.display = 'none';
+      tooltip.style.top = '50%';
+      tooltip.style.left = '50%';
+      tooltip.style.transform = 'translate(-50%, -50%)';
+      tooltip.dataset.arrow = 'top';
+      return;
+    }
+
+    const rect = target.getBoundingClientRect();
+    const padding = 12;
+    spotlight.style.display = 'block';
+    spotlight.style.top = (rect.top - padding) + 'px';
+    spotlight.style.left = (rect.left - padding) + 'px';
+    spotlight.style.width = (rect.width + padding * 2) + 'px';
+    spotlight.style.height = (rect.height + padding * 2) + 'px';
+
+    let left, top, arrow;
+    if (step.arrow === 'bottom') {
+      top = rect.bottom + 16;
+      left = rect.left + rect.width / 2 - 170;
+      arrow = 'top';
+      if (top + 220 > window.innerHeight - 20) {
+        top = rect.top - 220 - 16;
+        arrow = 'bottom';
+      }
+      if (left < 10) left = 10;
+      if (left + 340 > window.innerWidth - 10) left = window.innerWidth - 340 - 10;
+    } else {
+      top = rect.top - 220 - 16;
+      arrow = 'bottom';
+      if (top < 20) {
+        top = rect.bottom + 16;
+        arrow = 'top';
+      }
+      left = rect.left + rect.width / 2 - 170;
+      if (left < 10) left = 10;
+      if (left + 340 > window.innerWidth - 10) left = window.innerWidth - 340 - 10;
+    }
+
+    tooltip.style.top = top + 'px';
+    tooltip.style.left = left + 'px';
+    tooltip.dataset.arrow = arrow;
+
+    const newNext = nextBtn.cloneNode(true);
+    nextBtn.parentNode.replaceChild(newNext, nextBtn);
+    const newSkip = skipBtn.cloneNode(true);
+    skipBtn.parentNode.replaceChild(newSkip, skipBtn);
+
+    newNext.addEventListener('click', () => {
+      if (index === this.steps.length - 1) this.finish();
+      else { this.currentStep++; this.showStep(this.currentStep); }
+    });
+    newSkip.addEventListener('click', () => this.finish());
+
+    spotlight.style.animation = 'none';
+    spotlight.offsetHeight;
+    spotlight.style.animation = 'spotlightPulse 2s ease-in-out infinite';
+  },
+
+  finish() {
+    document.getElementById('tour-overlay').style.display = 'none';
+    document.getElementById('tour-spotlight').style.display = 'none';
+    this.isRunning = false;
+    DB.set('hasOnboarded', true);
+    toast('🎉 You\'re all set! Welcome to Jim Buddy.');
+  }
+};
+
+// Add the pulse animation
+const styleSheet = document.createElement("style");
+styleSheet.textContent = `
+  @keyframes spotlightPulse {
+    0%, 100% { box-shadow: 0 0 0 9999px rgba(0,0,0,0.75), 0 0 0 2px var(--accent); }
+    50% { box-shadow: 0 0 0 9999px rgba(0,0,0,0.75), 0 0 0 4px var(--accent), 0 0 20px rgba(0,229,160,0.3); }
+  }
+`;
+document.head.appendChild(styleSheet);
+
+// Auto‑start after page loads
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => TourManager.init(), 800);
+});
+
 document.addEventListener('DOMContentLoaded', () => {
   renderAuthState();
 });
