@@ -240,10 +240,13 @@
             </div>
           </div>
 
+         
           <!-- Search -->
-          <div class="search-wrap">
-            <input type="text" class="search-input" id="exercise-search" placeholder="Search exercises…" oninput="filterExercises()" />
-          </div>
+<div class="search-wrap" style="position: relative;">
+  <input type="text" class="search-input" id="exercise-search" placeholder="Search exercises…" autocomplete="off" />
+  <div id="autocomplete-list" class="autocomplete-items"></div>
+  <button class="search-clear-btn" id="search-clear-btn" style="display:none;">✕</button>
+</div>
 
           <!-- Filter chips -->
           <div class="chip-row" id="muscle-chips"></div>

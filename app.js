@@ -220,6 +220,9 @@ let state = {
   scheduledSession: null,
   scheduledCurrentIndex: null,
   selectedFoodId: null,
+  scannedFood: null,
+  foodScanner: null,
+  foodScannerActive: false,
   activeQueueIndex: null,
   lastCalculation: null,
   weightUnit: DB.get('weightUnit', 'kg') || 'kg'
@@ -240,6 +243,214 @@ function formatDate(dateStr) {
 function formatTime12(dateStr) {
   const d = new Date(dateStr);
   return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+}
+
+function formatKg(weight) {
+  const n = Number(weight) || 0;
+  return Number.isInteger(n) ? String(n) : n.toFixed(1).replace(/\.0$/, '');
+}
+
+function getAllExercises() {
+  return [...EXERCISE_LIBRARY, ...(getData().customWorkouts || [])];
+}
+
+let autocompleteSelectedIndex = -1;
+
+function updateAutocomplete() {
+  const input = document.getElementById('exercise-search');
+  const list = document.getElementById('autocomplete-list');
+  const query = input.value.toLowerCase().trim();
+
+  if (!query || query.length < 1) {
+    list.style.display = 'none';
+    // Still show all exercises when search is empty
+    filterExercises('');
+    return;
+  }
+
+  const allEx = getAllExercises();
+  const matches = allEx.filter(ex =>
+    ex.name.toLowerCase().includes(query) ||
+    (ex.muscle && ex.muscle.toLowerCase().includes(query))
+  ).slice(0, 10); // limit to 10 suggestions
+
+  if (matches.length === 0) {
+    list.style.display = 'none';
+    // Still filter main list to show "no results"
+    filterExercises(query);
+    return;
+  }
+
+  // Render dropdown
+  list.innerHTML = matches.map((ex, idx) => `
+    <div class="autocomplete-item" data-index="${idx}" data-id="${ex.id}">
+      <span class="item-name">${highlightMatch(ex.name, query)}</span>
+      <span class="item-muscle">${ex.muscle || 'General'}</span>
+    </div>
+  `).join('');
+
+  list.style.display = 'block';
+  autocompleteSelectedIndex = -1;
+
+  // Attach click listeners to each item
+  list.querySelectorAll('.autocomplete-item').forEach(el => {
+    el.addEventListener('click', function() {
+      const id = this.dataset.id;
+      const allEx2 = getAllExercises();
+      const selected = allEx2.find(e => e.id === id);
+      if (selected) {
+        input.value = selected.name;
+        list.style.display = 'none';
+        filterExercises(selected.name); // filter main list to this exercise
+        input.focus();
+      }
+    });
+  });
+
+  // Also filter the main list as they type (showing matches live)
+  filterExercises(query);
+}
+
+// Helper to bold matched text
+function highlightMatch(text, query) {
+  const idx = text.toLowerCase().indexOf(query.toLowerCase());
+  if (idx === -1) return text;
+  return text.slice(0, idx) +
+         `<strong style="color:var(--accent);">${text.slice(idx, idx + query.length)}</strong>` +
+         text.slice(idx + query.length);
+}
+
+// Updated filter – now takes an optional query param
+function filterExercises(query) {
+  // If query not provided, read from input
+  if (query === undefined || query === null) {
+    const input = document.getElementById('exercise-search');
+    query = input ? input.value.toLowerCase().trim() : '';
+  }
+
+  const allEx = getAllExercises();
+  let exercises = allEx;
+
+  if (state.muscleFilter !== 'All') {
+    exercises = exercises.filter(e => e.muscle === state.muscleFilter);
+  }
+
+  if (query) {
+    exercises = exercises.filter(e =>
+      e.name.toLowerCase().includes(query) ||
+      (e.muscle && e.muscle.toLowerCase().includes(query))
+    );
+  }
+
+  // Group and render as before
+  const groups = {};
+  exercises.forEach(e => {
+    if (!groups[e.muscle]) groups[e.muscle] = [];
+    groups[e.muscle].push(e);
+  });
+
+  const el = document.getElementById('exercise-list');
+  if (!el) return;
+
+  if (exercises.length === 0) {
+    el.innerHTML = `<div class="empty-state"><span class="empty-icon">🔍</span><p>No exercises found for "<strong>${query}</strong>"</p></div>`;
+    return;
+  }
+
+  const { prs } = getData();
+  el.innerHTML = Object.entries(groups).map(([muscle, exs]) => `
+    <div class="exercise-group">
+      <div class="exercise-group-title">${MUSCLE_EMOJIS[muscle] || ''} ${muscle}</div>
+      ${exs.map(e => `
+        <div class="exercise-card">
+          <div class="exercise-info" style="flex:1">
+            <div class="exercise-name">${escHtml(e.name)}</div>
+            <div class="exercise-meta">${e.isCardio ? 'Cardio' : `${e.sets} sets × ${e.reps} reps · ${e.rest}s rest`}</div>
+            ${prs[e.id] ? `<div class="exercise-pr">PR: ${prs[e.id].weight}kg</div>` : ''}
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); addToWorkoutQueue('${e.id}', '${escHtml(e.name)}')" style="padding:6px 12px">+ Queue</button>
+            <button class="btn btn-sm btn-ghost" onclick="event.stopPropagation(); startSessionForExercise('${e.id}')" style="padding:6px 12px">▶ Start</button>
+          </div>
+        </div>`).join('')}
+    </div>`).join('');
+}
+
+// ─── Keyboard navigation for autocomplete ───
+document.addEventListener('DOMContentLoaded', function() {
+  const input = document.getElementById('exercise-search');
+  const list = document.getElementById('autocomplete-list');
+
+  if (input) {
+    input.addEventListener('input', updateAutocomplete);
+
+    input.addEventListener('keydown', function(e) {
+      const items = list.querySelectorAll('.autocomplete-item');
+      if (items.length === 0) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        autocompleteSelectedIndex = Math.min(autocompleteSelectedIndex + 1, items.length - 1);
+        updateAutocompleteActive(items);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        autocompleteSelectedIndex = Math.max(autocompleteSelectedIndex - 1, -1);
+        updateAutocompleteActive(items);
+      } else if (e.key === 'Enter') {
+        if (autocompleteSelectedIndex >= 0 && autocompleteSelectedIndex < items.length) {
+          items[autocompleteSelectedIndex].click();
+        } else if (items.length > 0) {
+          // If nothing selected, choose the first one
+          items[0].click();
+        }
+        e.preventDefault();
+      } else if (e.key === 'Escape') {
+        list.style.display = 'none';
+        input.blur();
+      }
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.search-wrap')) {
+        list.style.display = 'none';
+      }
+    });
+
+    // On focus, show suggestions if there's a value
+    input.addEventListener('focus', function() {
+      if (this.value.trim().length > 0) {
+        updateAutocomplete();
+      }
+    });
+  }
+  const clearBtn = document.getElementById('search-clear-btn');
+if (clearBtn && input) {
+  input.addEventListener('input', function() {
+    clearBtn.style.display = this.value.length > 0 ? 'block' : 'none';
+  });
+  clearBtn.addEventListener('click', function() {
+    input.value = '';
+    input.focus();
+    updateAutocomplete();
+    clearBtn.style.display = 'none';
+  });
+}
+});
+
+
+
+function updateAutocompleteActive(items) {
+  items.forEach((el, idx) => {
+    el.classList.toggle('active', idx === autocompleteSelectedIndex);
+  });
+}
+
+function setSessionSaveMode(mode) {
+  const btn = document.getElementById('session-save-btn');
+  if (!btn) return;
+  btn.textContent = mode === 'queue' ? 'Save Exercise' : 'Save Session';
+  btn.onclick = mode === 'queue' ? saveQueuedExercise : saveSession;
 }
 
 function getWeekStart() {
@@ -440,6 +651,69 @@ function editPR(exerciseName, currentWeight) {
 }
 
 // ─── Calorie Tracker Functions ───────────────────────────
+function getExerciseSessionHistory(exercise) {
+  const sessions = getData().sessions || [];
+  const id = exercise?.id;
+  const name = (exercise?.name || '').toLowerCase();
+
+  return sessions
+    .flatMap(session => (session.exercises || []).map(ex => ({ session, ex })))
+    .filter(({ ex }) => {
+      const exName = (ex.name || '').toLowerCase();
+      return (id && ex.id === id) || (name && exName === name);
+    })
+    .map(({ session, ex }) => {
+      const doneSets = (ex.sets || []).filter(set => set.done && ((set.reps || 0) > 0 || (set.weight || 0) > 0));
+      if (!doneSets.length) return null;
+      const bestSet = doneSets.reduce((best, set) => {
+        const setWeight = Number(set.weight) || 0;
+        const bestWeight = Number(best.weight) || 0;
+        if (setWeight !== bestWeight) return setWeight > bestWeight ? set : best;
+        return (Number(set.reps) || 0) > (Number(best.reps) || 0) ? set : best;
+      }, doneSets[0]);
+      return {
+        date: session.date,
+        set: {
+          weight: Number(bestSet.weight) || 0,
+          reps: Number(bestSet.reps) || 0
+        }
+      };
+    })
+    .filter(Boolean)
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
+}
+
+function getProgressionSuggestion(exercise) {
+  if (!exercise || exercise.isCardio) return null;
+  const history = getExerciseSessionHistory(exercise);
+  if (!history.length) return null;
+
+  const targetReps = Number(exercise.reps) || 10;
+  const recent = history.slice(0, 3);
+  const last = recent[0].set;
+  const consistentHits = recent.length >= 2 && recent.slice(0, 2).every(item => (item.set.reps || 0) >= targetReps);
+  const lastText = last.weight > 0
+    ? `Last time: ${formatKg(last.weight)}kg × ${last.reps} reps`
+    : `Last time: bodyweight × ${last.reps} reps`;
+
+  if (consistentHits) {
+    if (last.weight > 0) {
+      const jump = last.weight >= 40 ? 2.5 : 1;
+      return `${lastText} → Try ${formatKg(last.weight + jump)}kg today.`;
+    }
+    return `${lastText} → Try ${last.reps + 2} reps today.`;
+  }
+
+  if (last.reps < targetReps) return `${lastText} → Aim for ${targetReps} reps.`;
+  if (last.weight > 0) return `${lastText} → Repeat it clean today.`;
+  return `${lastText} → Match it today.`;
+}
+
+function progressionHintHTML(exercise) {
+  const hint = getProgressionSuggestion(exercise);
+  return hint ? `<div class="progression-hint">${escHtml(hint)}</div>` : '';
+}
+
 function getTodayFoodLog() {
   const { foodLog } = getData();
   const today = new Date().toISOString().split('T')[0];
@@ -1451,8 +1725,10 @@ function renderMuscleChips() {
 
 function setMuscleFilter(m) {
   state.muscleFilter = m;
+  document.getElementById('exercise-search').value = ''; // clears search
+  document.getElementById('autocomplete-list').style.display = 'none';
   renderMuscleChips();
-  filterExercises();
+  filterExercises('');
 }
 
 function filterExercises() {
